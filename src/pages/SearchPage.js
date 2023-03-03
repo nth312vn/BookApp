@@ -8,6 +8,7 @@ const SearchPage = () => {
   const [booksSearch, setBooksSearch] = useState();
   const [books, setBooks] = useState();
   const [text, setText] = useState("");
+
   useEffect(() => {
     (async () => {
       const res = await getAll();
@@ -29,14 +30,8 @@ const SearchPage = () => {
           setBooksSearch(null);
           return;
         }
-        const results = res.map((searchBook) => {
-          const bookFiltered = books.find((book) => book.id === searchBook.id);
-          if (!bookFiltered) {
-            return searchBook;
-          }
-          return null;
-        });
-        setBooksSearch(results);
+
+        setBooksSearch(res);
       })();
     }
   };
@@ -74,6 +69,11 @@ const SearchPage = () => {
                     bookInfo={book}
                     key={index}
                     changeStatus={handleChangeStatus}
+                    bookShelf={
+                      books.find((item) =>
+                        booksSearch.find((o) => o.id === item.id)
+                      )?.shelf
+                    }
                   />
                 )
               );

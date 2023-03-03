@@ -17,7 +17,7 @@ const Book = (props) => {
           ></div>
           <div className="book-shelf-changer">
             <select
-              defaultValue={bookShelf || "none"}
+              value={bookShelf || "none"}
               onChange={(e) => changeStatus(bookInfo, e.target.value)}
             >
               {isSearching ? (
