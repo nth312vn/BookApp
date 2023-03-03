@@ -1,27 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { search, update } from "../BooksAPI";
+import { getAll, search, update } from "../BooksAPI";
 import Book from "../components/Book";
 
 const SearchPage = () => {
   const navigate = useNavigate();
+  const [booksSearch, setBooksSearch] = useState();
   const [books, setBooks] = useState();
   const [text, setText] = useState("");
+  useEffect(() => {
+    (async () => {
+      const res = await getAll();
+      setBooks(res);
+    })();
+  }, []);
+
   const handleSearchBook = (e) => {
     const value = e.target.value;
     setText(value);
     if (!value) {
-      setBooks(null);
+      setBooksSearch(null);
       return;
     }
     if (text) {
       (async () => {
         const res = await search(text, 100);
         if (res.error) {
-          setBooks(null);
+          setBooksSearch(null);
           return;
         }
-        setBooks(res);
+        const results = res.map((searchBook) => {
+          const bookFiltered = books.find((book) => book.id === searchBook.id);
+          if (!bookFiltered) {
+            return searchBook;
+          }
+          return null;
+        });
+        setBooksSearch(results);
       })();
     }
   };
@@ -50,15 +65,17 @@ const SearchPage = () => {
       </div>
       <div className="search-books-results">
         <ol className="books-grid">
-          {books &&
-            books.map((book, index) => {
+          {booksSearch &&
+            booksSearch.map((book, index) => {
               return (
-                <Book
-                  isSearching
-                  bookInfo={book}
-                  key={index}
-                  changeStatus={handleChangeStatus}
-                />
+                book && (
+                  <Book
+                    isSearching
+                    bookInfo={book}
+                    key={index}
+                    changeStatus={handleChangeStatus}
+                  />
+                )
               );
             })}
         </ol>
