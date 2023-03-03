@@ -6,10 +6,14 @@ import Book from "../components/Book";
 const SearchPage = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState();
-  const [text, setText] = useState();
+  const [text, setText] = useState("");
   const handleSearchBook = (e) => {
     const value = e.target.value;
     setText(value);
+    if (!value) {
+      setBooks(null);
+      return;
+    }
     if (text) {
       (async () => {
         const res = await search(text, 100);
@@ -36,6 +40,7 @@ const SearchPage = () => {
         </button>
         <div className="search-books-input-wrapper">
           <input
+            name="text"
             type="text"
             value={text}
             onChange={handleSearchBook}
@@ -49,6 +54,7 @@ const SearchPage = () => {
             books.map((book, index) => {
               return (
                 <Book
+                  isSearching
                   bookInfo={book}
                   key={index}
                   changeStatus={handleChangeStatus}
